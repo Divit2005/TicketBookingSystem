@@ -1,0 +1,1339 @@
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CinePass | Movie Ticket Booking</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #e50914;
+            --primary-glow: rgba(229, 9, 20, 0.35);
+            --primary-hover: #f40612;
+            --accent: #ff4757;
+            --bg-dark: #090a0f;
+            --bg-card: rgba(23, 26, 35, 0.85);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --gold: #f59e0b;
+            --cyan: #06b6d4;
+            --purple: #8b5cf6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(229, 9, 20, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.06) 0%, transparent 40%);
+        }
+
+        /* Navbar */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+            background: rgba(9, 10, 15, 0.85);
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 4rem;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.6rem;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-search {
+            display: flex;
+            align-items: center;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 9999px;
+            padding: 0.5rem 1.25rem;
+            width: 380px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-search:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-search i {
+            color: var(--text-muted);
+            margin-right: 0.75rem;
+        }
+
+        .nav-search input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .nav-search input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .location-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            background: var(--bg-glass);
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-glass);
+            cursor: pointer;
+        }
+
+        .location-badge i {
+            color: var(--primary);
+        }
+
+        .btn-user {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            border: none;
+            padding: 0.55rem 1.3rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-user:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(229, 9, 20, 0.5);
+        }
+
+        /* Hero Banner */
+        .hero {
+            padding: 2.5rem 4rem 1rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hero-banner {
+            position: relative;
+            height: 380px;
+            border-radius: 24px;
+            overflow: hidden;
+            background: linear-gradient(90deg, #111420 35%, rgba(17, 20, 32, 0.4) 100%),
+                        url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1920&q=80') center/cover;
+            display: flex;
+            align-items: center;
+            padding: 3rem 4rem;
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content {
+            max-width: 600px;
+            z-index: 2;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(229, 9, 20, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(229, 9, 20, 0.4);
+            padding: 0.35rem 0.9rem;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 0.8rem;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            border: none;
+            padding: 0.85rem 2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow: 0 6px 20px var(--primary-glow);
+            transition: all 0.3s ease;
+        }
+
+        .hero-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(229, 9, 20, 0.5);
+        }
+
+        /* Filter Section */
+        .controls-section {
+            max-width: 1400px;
+            margin: 2rem auto 0;
+            padding: 0 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-heading {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .section-heading i {
+            color: var(--primary);
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-muted);
+            padding: 0.45rem 1.1rem;
+            border-radius: 9999px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .pill:hover, .pill.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        /* Movie Grid */
+        .movies-container {
+            max-width: 1400px;
+            margin: 1.5rem auto 4rem;
+            padding: 0 4rem;
+        }
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Movie Card */
+        .movie-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 18px;
+            overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(229, 9, 20, 0.4);
+            box-shadow: 0 16px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--primary-glow);
+        }
+
+        .card-poster {
+            position: relative;
+            height: 280px;
+            overflow: hidden;
+            background: #1e293b;
+        }
+
+        .card-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .movie-card:hover .card-poster img {
+            transform: scale(1.06);
+        }
+
+        .screen-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.25rem 0.65rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .screen-badge.IMAX_3D {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
+            color: #fff;
+            border: none;
+        }
+
+        .screen-badge.FOUR_DX {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.8), rgba(14, 165, 233, 0.9));
+            color: #fff;
+            border: none;
+        }
+
+        .duration-badge {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(9, 10, 15, 0.8);
+            backdrop-filter: blur(6px);
+            color: #e2e8f0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .card-body {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .movie-tags {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .movie-tag {
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.2rem 0.55rem;
+            border-radius: 4px;
+        }
+
+        .movie-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .theatre-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+
+        .theatre-name {
+            font-weight: 600;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .theatre-location {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.78rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .showtime-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed var(--border-glass);
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .showtime-val {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .price-tag {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .price-val {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #10b981;
+        }
+
+        .btn-book {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            border: none;
+            padding: 0.55rem 1.25rem;
+            border-radius: 9px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-book:hover {
+            transform: scale(1.04);
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        /* Empty / Loading State */
+        .status-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .status-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #131722;
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 520px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            animation: modalFadeIn 0.25s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .btn-close:hover {
+            color: #fff;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-movie-summary {
+            display: flex;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .modal-poster {
+            width: 80px;
+            height: 110px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .modal-details h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .modal-details p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.2rem;
+        }
+
+        .seat-selector {
+            margin-bottom: 1.25rem;
+        }
+
+        .seat-selector label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #cbd5e1;
+        }
+
+        .seat-counter {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-qty {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-qty:hover {
+            background: var(--primary);
+        }
+
+        .qty-val {
+            font-size: 1.1rem;
+            font-weight: 700;
+            width: 20px;
+            text-align: center;
+        }
+
+        .modal-footer {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--border-glass);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .wallet-badge {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            padding: 0.45rem 0.9rem;
+            border-radius: 9999px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            display: none;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-history-nav {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-history-nav:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        /* History Modal */
+        .history-card {
+            background: #111420;
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            max-width: 640px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            animation: modalFadeIn 0.25s ease;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.75rem;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .history-header h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .history-header h3 i {
+            color: var(--primary);
+        }
+
+        .history-body {
+            padding: 1.5rem 1.75rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .ticket-item {
+            background: #181d2d;
+            border: 1px solid var(--border-glass);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .ticket-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ticket-item-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+
+        .ticket-status-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .ticket-item-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4rem 1rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .ticket-item-details b {
+            color: #fff;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            nav { padding: 1rem 1.5rem; }
+            .nav-search { display: none; }
+            .hero { padding: 1.5rem 1.5rem 0.5rem; }
+            .hero-banner { height: 300px; padding: 2rem; }
+            .hero-title { font-size: 2rem; }
+            .controls-section { padding: 0 1.5rem; }
+            .movies-container { padding: 0 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">
+            <i class="fa-solid fa-clapperboard"></i>
+            Cine<span>Pass</span>
+        </a>
+
+        <div class="nav-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Search movies, genres, language...">
+        </div>
+
+        <div class="nav-actions">
+            <div class="wallet-badge" id="navWalletBadge" title="Fake Wallet Balance">
+                <i class="fa-solid fa-wallet"></i> <span id="navWalletBalance">₹10,000.00</span>
+            </div>
+            <button class="btn-history-nav" id="btnHistoryNav" onclick="openHistoryModal()">
+                <i class="fa-solid fa-clock-rotate-left"></i> My Bookings
+            </button>
+            <div class="location-badge">
+                <i class="fa-solid fa-location-dot"></i>
+                <span id="cityLabel">Bangalore</span>
+            </div>
+            <button class="btn-user" id="userNavBtn" onclick="handleUserNavClick()">
+                <i class="fa-regular fa-user" id="userNavIcon"></i>
+                <span id="userNavText">Sign In</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-banner">
+            <div class="hero-content">
+                <div class="hero-tag">
+                    <i class="fa-solid fa-fire"></i> Trending Now
+                </div>
+                <h1 class="hero-title">Experience Cinema in IMAX 3D</h1>
+                <p class="hero-desc">Book the best seats instantly for the latest blockbusters with crystal clear surround sound and next-gen visuals.</p>
+                <button class="hero-btn" onclick="scrollToMovies()">
+                    <i class="fa-solid fa-ticket"></i> Browse Now Showing
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls / Filters -->
+    <div class="controls-section" id="moviesSection">
+        <div class="section-heading">
+            <i class="fa-solid fa-film"></i>
+            Now Showing
+        </div>
+
+        <div class="filter-pills">
+            <button class="pill active" onclick="filterGenre('ALL')">All</button>
+            <button class="pill" onclick="filterGenre('Sci-Fi')">Sci-Fi</button>
+            <button class="pill" onclick="filterGenre('Action')">Action</button>
+            <button class="pill" onclick="filterGenre('Biography')">Biography</button>
+            <button class="pill" onclick="filterGenre('Adventure')">Adventure</button>
+            <button class="pill" onclick="filterGenre('Drama')">Drama</button>
+        </div>
+    </div>
+
+    <!-- Movies Grid -->
+    <div class="movies-container">
+        <div class="movie-grid" id="movieGrid">
+            <!-- Loading placeholder -->
+            <div class="status-state">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <h3>Loading latest movies...</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal (Login / Register) -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-card" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3 id="authModalTitle">Sign In</h3>
+                <button class="btn-close" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 10px;">
+                    <button id="tabLogin" class="pill active" style="flex: 1; border-radius: 8px;" onclick="switchAuthTab('login')">Sign In</button>
+                    <button id="tabRegister" class="pill" style="flex: 1; border-radius: 8px;" onclick="switchAuthTab('register')">Sign Up</button>
+                </div>
+
+                <div id="authAlert" style="display: none; padding: 0.6rem; border-radius: 8px; font-size: 0.82rem; margin-bottom: 1rem;"></div>
+
+                <form id="authForm" onsubmit="handleAuthSubmit(event)">
+                    <div id="nameFieldGroup" style="display: none; margin-bottom: 1rem;">
+                        <label style="display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.3rem;">Full Name</label>
+                        <input type="text" id="authName" style="width: 100%; padding: 0.65rem 0.9rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; outline: none;" placeholder="John Doe">
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.3rem;">Email Address</label>
+                        <input type="email" id="authEmail" required style="width: 100%; padding: 0.65rem 0.9rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; outline: none;" placeholder="name@example.com">
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.3rem;">Password</label>
+                        <input type="password" id="authPassword" required style="width: 100%; padding: 0.65rem 0.9rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; outline: none;" placeholder="••••••••">
+                    </div>
+
+                    <button type="submit" id="authSubmitBtn" class="hero-btn" style="width: 100%; justify-content: center; padding: 0.75rem;">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking History Modal -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="history-card">
+            <div class="history-header">
+                <h3><i class="fa-solid fa-ticket"></i> My Booking History</h3>
+                <button class="btn-close" onclick="closeHistoryModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="history-body" id="historyListContainer">
+                <p style="text-align: center; color: var(--text-muted);">Loading bookings...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Curated high quality movie posters for dynamic assignment based on title/genre
+        const posterMap = {
+            'inception': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80',
+            'interstellar': 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80',
+            'the dark knight': 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80',
+            'dangal': 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=600&q=80',
+            'avatar': 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80'
+        };
+
+        const defaultPosters = [
+            'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=600&q=80'
+        ];
+
+        let allMovies = [];
+        let activeGenre = 'ALL';
+        let currentMovie = null;
+        let selectedTickets = 2;
+
+        function getPosterUrl(title, index) {
+            const cleanTitle = (title || '').toLowerCase();
+            for (const [key, url] of Object.entries(posterMap)) {
+                if (cleanTitle.includes(key)) return url;
+            }
+            return defaultPosters[index % defaultPosters.length];
+        }
+
+        function formatShowTime(dateTimeStr) {
+            if (!dateTimeStr) return 'TBA';
+            try {
+                const date = new Date(dateTimeStr);
+                const options = { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
+                return date.toLocaleString('en-US', options);
+            } catch (e) {
+                return dateTimeStr;
+            }
+        }
+
+        function formatDuration(minutes) {
+            if (!minutes) return '2h';
+            const h = Math.floor(minutes / 60);
+            const m = minutes % 60;
+            return m > 0 ? `${h}h ${m}m` : `${h}h`;
+        }
+
+        const API_BASE = (window.location.port === '8080') ? '' : 'http://localhost:8080';
+
+        async function fetchMovies() {
+            const grid = document.getElementById('movieGrid');
+            try {
+                const response = await fetch(`${API_BASE}/Home`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                allMovies = await response.json();
+                renderMovies();
+            } catch (err) {
+                console.error('Failed to fetch movies from /Home:', err);
+                grid.innerHTML = `
+                    <div class="status-state">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <h3>Unable to load movies</h3>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #f87171;">${err.message}</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #94a3b8;">
+                            1. Ensure Spring Boot is running on port <b>8080</b>.<br>
+                            2. Check if PostgreSQL database is connected and table <code>movies</code> has data.
+                        </p>
+                        <button class="pill active" style="margin-top: 1.2rem;" onclick="fetchMovies()">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderMovies() {
+            const grid = document.getElementById('movieGrid');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            const filtered = allMovies.filter(movie => {
+                const matchesGenre = (activeGenre === 'ALL') || 
+                                     (movie.genre && movie.genre.toLowerCase() === activeGenre.toLowerCase());
+                
+                const matchesSearch = !searchVal || 
+                    (movie.title && movie.title.toLowerCase().includes(searchVal)) ||
+                    (movie.genre && movie.genre.toLowerCase().includes(searchVal)) ||
+                    (movie.language && movie.language.toLowerCase().includes(searchVal)) ||
+                    (movie.theatreName && movie.theatreName.toLowerCase().includes(searchVal));
+
+                return matchesGenre && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="status-state">
+                        <i class="fa-solid fa-film-slash"></i>
+                        <h3>No movies found</h3>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Try adjusting your search or genre filter.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map((m, idx) => {
+                const poster = getPosterUrl(m.title, idx);
+                const screenTypeClean = (m.screenType || 'STANDARD_2D').replace('_', ' ');
+                return `
+                    <div class="movie-card" onclick="goToMovieDetails(${m.id})" style="cursor: pointer;">
+                        <div class="card-poster">
+                            <img src="${poster}" alt="${m.title}" loading="lazy">
+                            <span class="screen-badge ${m.screenType || 'STANDARD_2D'}">${screenTypeClean}</span>
+                            <span class="duration-badge">
+                                <i class="fa-regular fa-clock"></i> ${formatDuration(m.durationMinutes)}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="movie-tags">
+                                <span class="movie-tag">${m.genre || 'Cinema'}</span>
+                                <span class="movie-tag">${m.language || 'English'}</span>
+                            </div>
+                            <h3 class="movie-title" title="${m.title}">${m.title}</h3>
+                            <div class="theatre-info">
+                                <div class="theatre-name">
+                                    <i class="fa-solid fa-building"></i> ${m.theatreName || 'Multiplex'}
+                                </div>
+                                <div class="theatre-location">
+                                    <i class="fa-solid fa-location-dot"></i> ${m.theatreLocation || 'Main Screen'}
+                                </div>
+                            </div>
+                            <div class="showtime-box">
+                                <span><i class="fa-regular fa-calendar"></i> Showtime</span>
+                                <span class="showtime-val">${formatShowTime(m.showTime)}</span>
+                            </div>
+                            <div class="card-footer">
+                                <div class="price-tag">
+                                    <span class="price-label">Price</span>
+                                    <span class="price-val">₹${(m.price || 0).toFixed(2)}</span>
+                                </div>
+                                <button class="btn-book" onclick="event.stopPropagation(); goToMovieDetails(${m.id})">
+                                    <i class="fa-solid fa-ticket"></i> Book Seats
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function goToMovieDetails(movieId) {
+            window.location.href = `movie-details.html?id=${movieId}`;
+        }
+
+        function filterGenre(genre) {
+            activeGenre = genre;
+            document.querySelectorAll('.filter-pills .pill').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.trim().toUpperCase() === genre.toUpperCase() || 
+                                              (genre === 'ALL' && btn.textContent.trim() === 'All'));
+            });
+            renderMovies();
+        }
+
+        document.getElementById('searchInput').addEventListener('input', renderMovies);
+
+        function scrollToMovies() {
+            document.getElementById('moviesSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function openBookingModal(movieId) {
+            currentMovie = allMovies.find(m => m.id === movieId);
+            if (!currentMovie) return;
+
+            selectedTickets = 2;
+            updateModalView();
+            document.getElementById('bookingModal').classList.add('open');
+        }
+
+        function updateModalView() {
+            if (!currentMovie) return;
+            const poster = getPosterUrl(currentMovie.title, 0);
+            const total = (currentMovie.price || 0) * selectedTickets;
+
+            document.getElementById('modalMovieSummary').innerHTML = `
+                <img src="${poster}" class="modal-poster" alt="${currentMovie.title}">
+                <div class="modal-details">
+                    <h4>${currentMovie.title}</h4>
+                    <p><i class="fa-solid fa-building"></i> ${currentMovie.theatreName} (${currentMovie.screenType})</p>
+                    <p><i class="fa-regular fa-clock"></i> ${formatShowTime(currentMovie.showTime)}</p>
+                    <p><i class="fa-solid fa-tag"></i> ₹${(currentMovie.price || 0).toFixed(2)} per ticket</p>
+                </div>
+            `;
+
+            document.getElementById('ticketQty').innerText = selectedTickets;
+            document.getElementById('modalTotalAmount').innerText = `₹${total.toFixed(2)}`;
+        }
+
+        function changeQty(delta) {
+            const next = selectedTickets + delta;
+            if (next >= 1 && next <= 10) {
+                selectedTickets = next;
+                updateModalView();
+            }
+        }
+
+        function openBookingModal(movieId) {
+            goToMovieDetails(movieId);
+        }
+
+        let authMode = 'login'; // 'login' or 'register'
+
+        async function checkAuthState() {
+            const token = localStorage.getItem('jwtToken');
+            const userName = localStorage.getItem('userName');
+            const navText = document.getElementById('userNavText');
+            const navIcon = document.getElementById('userNavIcon');
+            const walletBadge = document.getElementById('navWalletBadge');
+            const btnHistory = document.getElementById('btnHistoryNav');
+
+            if (token && userName) {
+                navText.innerText = `${userName.split(' ')[0]} (Sign Out)`;
+                navIcon.className = 'fa-solid fa-arrow-right-from-bracket';
+                walletBadge.style.display = 'flex';
+                btnHistory.style.display = 'flex';
+
+                try {
+                    const res = await fetch(`${API_BASE}/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.ok) {
+                        const profile = await res.json();
+                        localStorage.setItem('userBalance', profile.balance);
+                        document.getElementById('navWalletBalance').innerText = `₹${(profile.balance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+                        return;
+                    }
+                } catch (e) {}
+
+                const localBal = parseFloat(localStorage.getItem('userBalance') || '10000.00');
+                document.getElementById('navWalletBalance').innerText = `₹${localBal.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            } else {
+                navText.innerText = 'Sign In';
+                navIcon.className = 'fa-regular fa-user';
+                walletBadge.style.display = 'none';
+                btnHistory.style.display = 'none';
+            }
+        }
+
+        function handleUserNavClick() {
+            const token = localStorage.getItem('jwtToken');
+            if (token) {
+                if (confirm('Do you want to sign out?')) {
+                    localStorage.removeItem('jwtToken');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userEmail');
+                    localStorage.removeItem('userRole');
+                    localStorage.removeItem('userBalance');
+                    checkAuthState();
+                }
+            } else {
+                openAuthModal();
+            }
+        }
+
+        function openAuthModal() {
+            switchAuthTab('login');
+            document.getElementById('authAlert').style.display = 'none';
+            document.getElementById('authModal').classList.add('open');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('open');
+        }
+
+        function switchAuthTab(mode) {
+            authMode = mode;
+            const tabLogin = document.getElementById('tabLogin');
+            const tabRegister = document.getElementById('tabRegister');
+            const nameGroup = document.getElementById('nameFieldGroup');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            const modalTitle = document.getElementById('authModalTitle');
+            const alertBox = document.getElementById('authAlert');
+            alertBox.style.display = 'none';
+
+            if (mode === 'login') {
+                tabLogin.classList.add('active');
+                tabRegister.classList.remove('active');
+                nameGroup.style.display = 'none';
+                submitBtn.innerText = 'Sign In';
+                modalTitle.innerText = 'Sign In';
+            } else {
+                tabRegister.classList.add('active');
+                tabLogin.classList.remove('active');
+                nameGroup.style.display = 'block';
+                submitBtn.innerText = 'Create Account';
+                modalTitle.innerText = 'Create Account';
+            }
+        }
+
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            const alertBox = document.getElementById('authAlert');
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const name = document.getElementById('authName').value.trim();
+
+            alertBox.style.display = 'block';
+            alertBox.style.background = 'rgba(59, 130, 246, 0.15)';
+            alertBox.style.color = '#60a5fa';
+            alertBox.innerText = 'Processing...';
+
+            try {
+                const endpoint = authMode === 'login' ? `${API_BASE}/auth/login` : `${API_BASE}/auth/register`;
+                const payload = authMode === 'login' ? { email, password } : { name, email, password };
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Authentication failed');
+                }
+
+                const data = await response.json();
+                localStorage.setItem('jwtToken', data.token);
+                localStorage.setItem('userName', data.name);
+                localStorage.setItem('userEmail', data.email);
+                localStorage.setItem('userRole', data.role);
+                localStorage.setItem('userBalance', data.balance || 10000.0);
+
+                alertBox.style.background = 'rgba(16, 185, 129, 0.15)';
+                alertBox.style.color = '#34d399';
+                alertBox.innerText = data.message || 'Success!';
+
+                setTimeout(() => {
+                    closeAuthModal();
+                    checkAuthState();
+                }, 800);
+
+            } catch (err) {
+                alertBox.style.background = 'rgba(239, 68, 68, 0.15)';
+                alertBox.style.color = '#f87171';
+                alertBox.innerText = err.message.replace(/"/g, '');
+            }
+        }
+
+        async function openHistoryModal() {
+            const token = localStorage.getItem('jwtToken');
+            const container = document.getElementById('historyListContainer');
+            document.getElementById('historyModal').classList.add('open');
+
+            if (!token) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <i class="fa-solid fa-user-lock" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <p style="color: #fff; font-weight: 700; margin-bottom: 0.5rem;">Authentication Required</p>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Please log in to view your booking history.</p>
+                        <button class="hero-btn" onclick="closeHistoryModal(); openAuthModal();">Sign In Now</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `<p style="text-align: center; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading bookings...</p>`;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/bookings/history`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) throw new Error('Failed to retrieve history');
+
+                const list = await res.json();
+                if (!list || list.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <i class="fa-solid fa-ticket-simple" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                            <p style="color: #fff; font-weight: 700;">No Bookings Yet</p>
+                            <p style="color: var(--text-muted); font-size: 0.85rem;">You haven't booked any movie tickets yet.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = list.map(b => `
+                    <div class="ticket-item">
+                        <div class="ticket-item-header">
+                            <span class="ticket-item-title">${b.movieTitle}</span>
+                            <span class="ticket-status-tag">${b.status}</span>
+                        </div>
+                        <div class="ticket-item-details">
+                            <div><i class="fa-solid fa-hashtag"></i> Booking ID: <b>#${b.bookingId}</b></div>
+                            <div><i class="fa-solid fa-receipt"></i> Txn: <b style="color:#60a5fa;">${b.transactionId}</b></div>
+                            <div><i class="fa-solid fa-building"></i> Theatre: <b>${b.theatreName}</b></div>
+                            <div><i class="fa-solid fa-chair"></i> Seats: <b style="color:#38bdf8;">${(b.seatNumbers || []).join(', ')}</b></div>
+                            <div><i class="fa-regular fa-clock"></i> Booked On: <b>${formatShowTime(b.bookingTime)}</b></div>
+                            <div><i class="fa-solid fa-indian-rupee-sign"></i> Paid: <b style="color:#10b981;">₹${(b.totalAmount || 0).toFixed(2)}</b></div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (e) {
+                container.innerHTML = `<p style="text-align: center; color: #f87171;">Could not load booking history: ${e.message}</p>`;
+            }
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.remove('open');
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchMovies();
+            checkAuthState();
+        });
+    </script>
+</body>
+</html>

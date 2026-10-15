@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Seats & Book | CinePass</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #e50914;
+            --primary-glow: rgba(229, 9, 20, 0.4);
+            --accent: #ff4757;
+            --bg-dark: #090a0f;
+            --bg-card: rgba(23, 26, 35, 0.9);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --seat-avail: #334155;
+            --seat-selected: #e50914;
+            --seat-booked: #1e2433;
+            --seat-vip: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(229, 9, 20, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.06) 0%, transparent 40%);
+        }
+
+        /* Top Nav */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+            background: rgba(9, 10, 15, 0.9);
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.9rem 4rem;
+        }
+
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover {
+            color: #fff;
+        }
+
+        .logo {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-right-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .wallet-badge {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            padding: 0.4rem 0.9rem;
+            border-radius: 9999px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-history-nav {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 0.45rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-history-nav:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .btn-user-nav {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            border: none;
+            padding: 0.45rem 1.1rem;
+            border-radius: 9999px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* Main Container */
+        .page-layout {
+            max-width: 1400px;
+            margin: 1.5rem auto 3rem;
+            padding: 0 3rem;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 2rem;
+        }
+
+        /* Status Alert Banner */
+        .status-alert {
+            display: none;
+            padding: 0.85rem 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            align-items: center;
+            gap: 0.75rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .status-alert.error {
+            display: flex;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .status-alert.info {
+            display: flex;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Movie Info Banner */
+        .movie-banner-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1.75rem;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .movie-banner-card::after {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 180px;
+            height: 180px;
+            background: var(--primary-glow);
+            filter: blur(70px);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .movie-poster-mini {
+            width: 110px;
+            height: 155px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .movie-details h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .movie-meta-chips {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-chip {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-glass);
+            padding: 0.25rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .meta-chip.screen {
+            background: rgba(229, 9, 20, 0.15);
+            border-color: rgba(229, 9, 20, 0.3);
+            color: var(--accent);
+        }
+
+        .theatre-meta {
+            display: flex;
+            gap: 1.25rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .theatre-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .theatre-meta i {
+            color: var(--primary);
+        }
+
+        /* Seating Section */
+        .seating-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Screen Curve */
+        .screen-container {
+            width: 80%;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .screen-curve {
+            height: 12px;
+            border-top: 4px solid var(--primary);
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            filter: drop-shadow(0 0 10px var(--primary-glow));
+            margin-bottom: 0.5rem;
+        }
+
+        .screen-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        /* Legend */
+        .seat-legend {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            border: 1px solid var(--border-glass);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .legend-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+        }
+
+        .legend-box.available { background: var(--seat-avail); }
+        .legend-box.selected { background: var(--seat-selected); box-shadow: 0 0 8px var(--primary-glow); }
+        .legend-box.vip { background: var(--seat-vip); }
+        .legend-box.booked { background: #1e2433; border: 1px solid rgba(255,255,255,0.05); }
+
+        /* Grid */
+        .seats-grid-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            width: 100%;
+            max-width: 680px;
+            align-items: center;
+        }
+
+        .seat-tier-title {
+            align-self: flex-start;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 1rem;
+            margin-bottom: -0.25rem;
+        }
+
+        .seat-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .row-name {
+            width: 25px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .seat-btn {
+            width: 34px;
+            height: 34px;
+            background: var(--seat-avail);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px 8px 3px 3px;
+            color: #fff;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .seat-btn:hover:not(.booked):not(.selected) {
+            transform: scale(1.15);
+            background: #475569;
+            border-color: #94a3b8;
+        }
+
+        .seat-btn.selected {
+            background: var(--seat-selected);
+            border-color: #ff4757;
+            box-shadow: 0 0 10px var(--primary-glow);
+            transform: scale(1.1);
+        }
+
+        .seat-btn.vip {
+            border-top: 2.5px solid var(--seat-vip);
+        }
+
+        .seat-btn.booked {
+            background: #181d28;
+            color: #475569;
+            border-color: transparent;
+            cursor: not-allowed;
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .aisle-gap {
+            width: 28px;
+        }
+
+        /* Sidebar / Summary Card */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 1.75rem;
+            position: sticky;
+            top: 5rem;
+        }
+
+        .summary-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .summary-title i {
+            color: var(--primary);
+        }
+
+        .selected-seats-badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            min-height: 40px;
+            margin-bottom: 1.25rem;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 0.6rem 0.8rem;
+            border-radius: 10px;
+            border: 1px dashed var(--border-glass);
+            align-items: center;
+        }
+
+        .seat-tag {
+            background: rgba(229, 9, 20, 0.2);
+            border: 1px solid rgba(229, 9, 20, 0.4);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.55rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .no-seats-text {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .bill-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .bill-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        .bill-row.total {
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.15rem;
+            margin-top: 0.25rem;
+        }
+
+        .total-amount {
+            color: var(--primary);
+        }
+
+        .payment-methods {
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-methods label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .method-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .method-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 0.65rem;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+        }
+
+        .method-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .method-btn.active {
+            border-color: var(--primary);
+            background: rgba(229, 9, 20, 0.15);
+            color: #fff;
+        }
+
+        .btn-pay {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            border: none;
+            padding: 0.9rem;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            box-shadow: 0 6px 20px var(--primary-glow);
+            transition: all 0.25s ease;
+            width: 100%;
+        }
+
+        .btn-pay:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(229, 9, 20, 0.5);
+        }
+
+        .btn-pay:disabled {
+            background: #334155;
+            color: #94a3b8;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .ticket-modal {
+            background: #111420;
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            max-width: 480px;
+            width: 100%;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            animation: modalFade 0.25s ease;
+        }
+
+        @keyframes modalFade {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .ticket-modal i.success-icon {
+            font-size: 3.5rem;
+            color: #10b981;
+            margin-bottom: 0.75rem;
+        }
+
+        .ticket-modal h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .ticket-pass {
+            background: #181d2d;
+            border: 1px dashed var(--border-glass);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin: 1.25rem 0;
+            text-align: left;
+            font-size: 0.88rem;
+        }
+
+        .ticket-pass div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .ticket-pass div:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .btn-modal {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: #fff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-modal.primary {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-modal:hover {
+            opacity: 0.9;
+        }
+
+        /* History Modal */
+        .history-card {
+            background: #111420;
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            max-width: 640px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            animation: modalFade 0.25s ease;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.75rem;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .history-header h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .history-header h3 i {
+            color: var(--primary);
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .history-body {
+            padding: 1.5rem 1.75rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .ticket-item {
+            background: #181d2d;
+            border: 1px solid var(--border-glass);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .ticket-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ticket-item-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+
+        .ticket-status-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .ticket-item-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4rem 1rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .ticket-item-details b {
+            color: #fff;
+        }
+
+        /* Pill Tabs */
+        .pill {
+            background: transparent;
+            border: 1px solid var(--border-glass);
+            color: var(--text-muted);
+            padding: 0.45rem 1.1rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pill.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .page-layout { grid-template-columns: 1fr; padding: 0 1.5rem; }
+            nav { padding: 0.9rem 1.5rem; }
+            .summary-card { position: static; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Nav -->
+    <nav>
+        <a href="index.html" class="nav-back">
+            <i class="fa-solid fa-arrow-left"></i> Back to Movies
+        </a>
+        <a href="index.html" class="logo">
+            <i class="fa-solid fa-clapperboard"></i> Cine<span>Pass</span>
+        </a>
+        <div class="nav-right-actions">
+            <div class="wallet-badge" id="navWalletBadge" title="Fake Wallet Balance">
+                <i class="fa-solid fa-wallet"></i> <span id="navWalletBalance">₹10,000.00</span>
+            </div>
+            <button class="btn-history-nav" id="btnNavHistory" onclick="openHistoryModal()">
+                <i class="fa-solid fa-clock-rotate-left"></i> My Bookings
+            </button>
+            <button class="btn-user-nav" id="btnNavUser" onclick="handleUserNavClick()">
+                <i class="fa-regular fa-user" id="userNavIcon"></i>
+                <span id="userNavText">Sign In</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Page Body -->
+    <div class="page-layout">
+        
+        <!-- Left: Movie Info + Seating Grid -->
+        <div class="main-content">
+            
+            <!-- Dynamic Alert Banner -->
+            <div class="status-alert" id="statusAlert">
+                <i class="fa-solid fa-triangle-exclamation" id="statusAlertIcon"></i>
+                <span id="statusAlertMsg">Alert message</span>
+            </div>
+
+            <!-- Movie Banner Card -->
+            <div class="movie-banner-card" id="movieBanner">
+                <img id="moviePoster" class="movie-poster-mini" src="" alt="Movie Poster">
+                <div class="movie-details">
+                    <h1 id="movieTitle">Loading movie...</h1>
+                    <div class="movie-meta-chips">
+                        <span class="meta-chip" id="movieGenre">-</span>
+                        <span class="meta-chip" id="movieLanguage">-</span>
+                        <span class="meta-chip" id="movieDuration">-</span>
+                        <span class="meta-chip screen" id="movieScreenType">STANDARD 2D</span>
+                    </div>
+                    <div class="theatre-meta">
+                        <span><i class="fa-solid fa-building"></i> <span id="theatreName">-</span></span>
+                        <span><i class="fa-solid fa-location-dot"></i> <span id="theatreLocation">-</span></span>
+                        <span><i class="fa-regular fa-clock"></i> <span id="showTime">-</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seating Section -->
+            <div class="seating-section">
+                <!-- Screen curve -->
+                <div class="screen-container">
+                    <div class="screen-curve"></div>
+                    <span class="screen-label">Cinema Screen This Way</span>
+                </div>
+
+                <!-- Legend -->
+                <div class="seat-legend">
+                    <div class="legend-item">
+                        <div class="legend-box available"></div> Available
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box selected"></div> Selected
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box vip"></div> VIP
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box booked"></div> Booked
+                    </div>
+                </div>
+
+                <!-- Seats Matrix -->
+                <div class="seats-grid-wrapper" id="seatsMatrix">
+                    <!-- Dynamic Rows Rendered by JS from DB -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right: Summary & Checkout Card -->
+        <div class="sidebar">
+            <div class="summary-card">
+                <div class="summary-title">
+                    <i class="fa-solid fa-receipt"></i>
+                    Booking Summary
+                </div>
+
+                <div class="selected-seats-badge-container" id="selectedSeatsBadges">
+                    <span class="no-seats-text">No seats selected yet.</span>
+                </div>
+
+                <div class="bill-rows">
+                    <div class="bill-row">
+                        <span>Base Price (<span id="ticketCountLabel">0</span> × <span id="unitPriceLabel">₹0</span>)</span>
+                        <span id="subTotalLabel">₹0.00</span>
+                    </div>
+                    <div class="bill-row">
+                        <span>Convenience Fee (GST incl.)</span>
+                        <span id="taxFeeLabel">₹0.00</span>
+                    </div>
+                    <div class="bill-row total">
+                        <span>Total Payable</span>
+                        <span class="total-amount" id="grandTotalLabel">₹0.00</span>
+                    </div>
+                </div>
+
+                <div class="payment-methods">
+                    <label>Select Payment Method</label>
+                    <div class="method-options">
+                        <button class="method-btn active" onclick="selectPaymentMethod(this, 'WALLET')">
+                            <i class="fa-solid fa-wallet"></i> Fake Wallet
+                        </button>
+                        <button class="method-btn" onclick="selectPaymentMethod(this, 'UPI')">
+                            <i class="fa-brands fa-google-pay"></i> UPI
+                        </button>
+                        <button class="method-btn" onclick="selectPaymentMethod(this, 'CARD')">
+                            <i class="fa-regular fa-credit-card"></i> Card
+                        </button>
+                        <button class="method-btn" onclick="selectPaymentMethod(this, 'NET_BANKING')">
+                            <i class="fa-solid fa-landmark"></i> NetBanking
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn-pay" id="btnPay" disabled onclick="handlePayment()">
+                    <i class="fa-solid fa-lock"></i> Proceed to Pay
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Auth Modal (Sign In / Sign Up) -->
+    <div class="modal-overlay" id="authModal">
+        <div class="history-card" style="max-width: 420px;">
+            <div class="history-header">
+                <h3 id="authModalTitle"><i class="fa-solid fa-user-lock"></i> Sign In to Book</h3>
+                <button class="btn-close" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="history-body">
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 10px;">
+                    <button id="tabLogin" class="pill active" style="flex: 1; border-radius: 8px;" onclick="switchAuthTab('login')">Sign In</button>
+                    <button id="tabRegister" class="pill" style="flex: 1; border-radius: 8px;" onclick="switchAuthTab('register')">Sign Up (₹10,000 Bonus)</button>
+                </div>
+
+                <div id="authAlert" style="display: none; padding: 0.65rem 0.9rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem;"></div>
+
+                <form id="authForm" onsubmit="handleAuthSubmit(event)">
+                    <div id="nameFieldGroup" style="display: none; margin-bottom: 1rem;">
+                        <label style="display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.3rem;">Full Name</label>
+                        <input type="text" id="authName" style="width: 100%; padding: 0.65rem 0.9rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; outline: none;" placeholder="John Doe">
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.3rem;">Email Address</label>
+                        <input type="email" id="authEmail" required style="width: 100%; padding: 0.65rem 0.9rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; outline: none;" placeholder="name@example.com">
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.3rem;">Password</label>
+                        <input type="password" id="authPassword" required style="width: 100%; padding: 0.65rem 0.9rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; outline: none;" placeholder="••••••••">
+                    </div>
+
+                    <button type="submit" id="authSubmitBtn" class="btn-pay" style="padding: 0.75rem;">
+                        Sign In & Continue
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Confirmed Ticket Modal -->
+    <div class="modal-overlay" id="ticketSuccessModal">
+        <div class="ticket-modal">
+            <i class="fa-solid fa-circle-check success-icon"></i>
+            <h2>Booking Confirmed!</h2>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">Your tickets have been reserved successfully.</p>
+
+            <div class="ticket-pass">
+                <div><span>Booking ID:</span> <b id="confBookingId">BK-98421</b></div>
+                <div><span>Transaction ID:</span> <b id="confTxnId" style="color: #60a5fa;">TXN-123456</b></div>
+                <div><span>Movie:</span> <b id="confMovieTitle">-</b></div>
+                <div><span>Theatre:</span> <b id="confTheatre">-</b></div>
+                <div><span>Showtime:</span> <b id="confShowtime">-</b></div>
+                <div><span>Seats:</span> <b id="confSeats" style="color: #38bdf8;">-</b></div>
+                <div><span>Amount Paid:</span> <b id="confAmount" style="color: #10b981;">-</b></div>
+                <div><span>Wallet Balance Left:</span> <b id="confRemainingBalance" style="color: #f59e0b;">-</b></div>
+            </div>
+
+            <div class="modal-btns">
+                <button class="btn-modal" onclick="closeSuccessModal(); openHistoryModal();">
+                    <i class="fa-solid fa-clock-rotate-left"></i> View History
+                </button>
+                <a href="index.html" class="btn-modal primary">
+                    <i class="fa-solid fa-house"></i> Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking History Modal -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="history-card">
+            <div class="history-header">
+                <h3><i class="fa-solid fa-ticket"></i> My Booking History</h3>
+                <button class="btn-close" onclick="closeHistoryModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="history-body" id="historyListContainer">
+                <p style="text-align: center; color: var(--text-muted);">Loading bookings...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080';
+        
+        // URL Param
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('id') || '1';
+
+        let movie = null;
+        let selectedSeats = new Set();
+        let selectedMethod = 'WALLET';
+        let dbSeats = [];
+        let authMode = 'login';
+
+        const posterMap = {
+            'inception': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80',
+            'interstellar': 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80',
+            'the dark knight': 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80',
+            'dangal': 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=600&q=80',
+            'avatar': 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80'
+        };
+
+        function getPosterUrl(title) {
+            const clean = (title || '').toLowerCase();
+            for (const [key, url] of Object.entries(posterMap)) {
+                if (clean.includes(key)) return url;
+            }
+            return 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80';
+        }
+
+        function formatShowTime(dateTimeStr) {
+            if (!dateTimeStr) return 'TBA';
+            try {
+                const date = new Date(dateTimeStr);
+                return date.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+            } catch (e) {
+                return dateTimeStr;
+            }
+        }
+
+        function showAlert(msg, isError = true) {
+            const alertBox = document.getElementById('statusAlert');
+            const alertMsg = document.getElementById('statusAlertMsg');
+            const alertIcon = document.getElementById('statusAlertIcon');
+            alertBox.className = `status-alert ${isError ? 'error' : 'info'}`;
+            alertIcon.className = isError ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-circle-info';
+            alertMsg.innerText = msg;
+            alertBox.style.display = 'flex';
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 7000);
+        }
+
+        async function updateAuthStateAndWallet() {
+            const token = localStorage.getItem('jwtToken');
+            const userName = localStorage.getItem('userName');
+            const navText = document.getElementById('userNavText');
+            const navIcon = document.getElementById('userNavIcon');
+            const walletBadge = document.getElementById('navWalletBadge');
+
+            if (token && userName) {
+                navText.innerText = `${userName.split(' ')[0]} (Sign Out)`;
+                navIcon.className = 'fa-solid fa-arrow-right-from-bracket';
+                walletBadge.style.display = 'flex';
+
+                try {
+                    const res = await fetch(`${API_BASE}/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.ok) {
+                        const profile = await res.json();
+                        localStorage.setItem('userBalance', profile.balance);
+                        document.getElementById('navWalletBalance').innerText = `₹${(profile.balance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+                        return;
+                    }
+                } catch (e) {}
+
+                const localBal = parseFloat(localStorage.getItem('userBalance') || '10000.00');
+                document.getElementById('navWalletBalance').innerText = `₹${localBal.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            } else {
+                navText.innerText = 'Sign In';
+                navIcon.className = 'fa-regular fa-user';
+                walletBadge.style.display = 'none';
+            }
+        }
+
+        function handleUserNavClick() {
+            const token = localStorage.getItem('jwtToken');
+            if (token) {
+                if (confirm('Do you want to sign out?')) {
+                    localStorage.removeItem('jwtToken');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userEmail');
+                    localStorage.removeItem('userRole');
+                    localStorage.removeItem('userBalance');
+                    updateAuthStateAndWallet();
+                }
+            } else {
+                openAuthModal();
+            }
+        }
+
+        function openAuthModal() {
+            switchAuthTab('login');
+            document.getElementById('authAlert').style.display = 'none';
+            document.getElementById('authModal').classList.add('open');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('open');
+        }
+
+        function switchAuthTab(mode) {
+            authMode = mode;
+            const tabLogin = document.getElementById('tabLogin');
+            const tabRegister = document.getElementById('tabRegister');
+            const nameGroup = document.getElementById('nameFieldGroup');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            const modalTitle = document.getElementById('authModalTitle');
+            const alertBox = document.getElementById('authAlert');
+            alertBox.style.display = 'none';
+
+            if (mode === 'login') {
+                tabLogin.classList.add('active');
+                tabRegister.classList.remove('active');
+                nameGroup.style.display = 'none';
+                submitBtn.innerText = 'Sign In & Continue';
+                modalTitle.innerHTML = '<i class="fa-solid fa-user-lock"></i> Sign In to Book';
+            } else {
+                tabRegister.classList.add('active');
+                tabLogin.classList.remove('active');
+                nameGroup.style.display = 'block';
+                submitBtn.innerText = 'Register & Get ₹10,000 Wallet';
+                modalTitle.innerHTML = '<i class="fa-solid fa-gift"></i> Create Account & Get ₹10,000';
+            }
+        }
+
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            const alertBox = document.getElementById('authAlert');
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const name = document.getElementById('authName').value.trim();
+
+            alertBox.style.display = 'block';
+            alertBox.style.background = 'rgba(59, 130, 246, 0.15)';
+            alertBox.style.color = '#60a5fa';
+            alertBox.innerText = 'Processing...';
+
+            try {
+                const endpoint = authMode === 'login' ? `${API_BASE}/auth/login` : `${API_BASE}/auth/register`;
+                const payload = authMode === 'login' ? { email, password } : { name, email, password };
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Authentication failed');
+                }
+
+                const data = await response.json();
+                localStorage.setItem('jwtToken', data.token);
+                localStorage.setItem('userName', data.name);
+                localStorage.setItem('userEmail', data.email);
+                localStorage.setItem('userRole', data.role);
+                localStorage.setItem('userBalance', data.balance || 10000.0);
+
+                alertBox.style.background = 'rgba(16, 185, 129, 0.15)';
+                alertBox.style.color = '#34d399';
+                alertBox.innerText = data.message || 'Success!';
+
+                setTimeout(() => {
+                    closeAuthModal();
+                    updateAuthStateAndWallet();
+                }, 600);
+
+            } catch (err) {
+                alertBox.style.background = 'rgba(239, 68, 68, 0.15)';
+                alertBox.style.color = '#f87171';
+                alertBox.innerText = err.message.replace(/"/g, '');
+            }
+        }
+
+        async function loadMovieDetails() {
+            try {
+                const res = await fetch(`${API_BASE}/Home/${movieId}`);
+                if (res.ok) {
+                    movie = await res.json();
+                } else {
+                    const allRes = await fetch(`${API_BASE}/Home`);
+                    if (allRes.ok) {
+                        const list = await allRes.json();
+                        movie = list.find(m => String(m.id) === String(movieId)) || list[0];
+                    }
+                }
+            } catch (e) {
+                console.error("Could not fetch movie from backend", e);
+            }
+
+            if (!movie) {
+                movie = {
+                    id: movieId,
+                    title: "Selected Movie",
+                    genre: "Sci-Fi / Action",
+                    language: "English",
+                    durationMinutes: 150,
+                    theatreName: "PVR Cinemas IMAX",
+                    theatreLocation: "Forum Mall, Koramangala",
+                    screenType: "IMAX_3D",
+                    showTime: new Date().toISOString(),
+                    price: 350.00
+                };
+            }
+
+            renderMovieBanner();
+            await fetchAndRenderSeats();
+            updateAuthStateAndWallet();
+        }
+
+        function renderMovieBanner() {
+            document.getElementById('moviePoster').src = getPosterUrl(movie.title);
+            document.getElementById('movieTitle').innerText = movie.title;
+            document.getElementById('movieGenre').innerText = movie.genre || 'Action';
+            document.getElementById('movieLanguage').innerText = movie.language || 'English';
+            document.getElementById('movieDuration').innerText = `${movie.durationMinutes || 120} min`;
+            document.getElementById('movieScreenType').innerText = (movie.screenType || 'STANDARD_2D').replace('_', ' ');
+            document.getElementById('theatreName').innerText = movie.theatreName || 'Multiplex';
+            document.getElementById('theatreLocation').innerText = movie.theatreLocation || 'Main Hall';
+            document.getElementById('showTime').innerText = formatShowTime(movie.showTime);
+            document.getElementById('unitPriceLabel').innerText = `₹${(movie.price || 250).toFixed(2)}`;
+        }
+
+        async function fetchAndRenderSeats() {
+            try {
+                const res = await fetch(`${API_BASE}/api/bookings/movies/${movie.id}/seats`);
+                if (res.ok) {
+                    dbSeats = await res.json();
+                }
+            } catch (e) {
+                console.error("Failed to load seats from API", e);
+            }
+
+            renderSeatMatrix();
+        }
+
+        function renderSeatMatrix() {
+            const container = document.getElementById('seatsMatrix');
+            
+            // Group seats by row
+            const rowsMap = {};
+            if (dbSeats && dbSeats.length > 0) {
+                dbSeats.forEach(s => {
+                    if (!rowsMap[s.rowChar]) rowsMap[s.rowChar] = [];
+                    rowsMap[s.rowChar].push(s);
+                });
+            } else {
+                ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(r => {
+                    rowsMap[r] = [];
+                    const count = (r === 'A') ? 8 : 10;
+                    const type = (r === 'A') ? 'VIP' : (['B', 'C', 'D'].includes(r) ? 'PREMIUM' : 'REGULAR');
+                    for (let i = 1; i <= count; i++) {
+                        rowsMap[r].push({ rowChar: r, seatNumber: i, seatType: type, isBooked: false });
+                    }
+                });
+            }
+
+            let html = '';
+            let currentTier = '';
+
+            Object.keys(rowsMap).sort().forEach(rowChar => {
+                const rowSeats = rowsMap[rowChar].sort((a, b) => a.seatNumber - b.seatNumber);
+                const tier = rowSeats[0]?.seatType || 'REGULAR';
+
+                if (tier !== currentTier) {
+                    currentTier = tier;
+                    html += `<div class="seat-tier-title">${currentTier} Tier</div>`;
+                }
+
+                html += `<div class="seat-row">`;
+                html += `<div class="row-name">${rowChar}</div>`;
+
+                const totalInRow = rowSeats.length;
+                rowSeats.forEach((s, idx) => {
+                    const seatCode = `${s.rowChar}${s.seatNumber}`;
+                    const isBooked = Boolean(s.isBooked);
+                    const isVip = (s.seatType === 'VIP');
+                    const isSelected = selectedSeats.has(seatCode);
+
+                    // Aisle gap in middle
+                    if (idx === Math.floor(totalInRow / 2)) {
+                        html += `<div class="aisle-gap"></div>`;
+                    }
+
+                    html += `
+                        <button class="seat-btn ${isBooked ? 'booked' : ''} ${isVip ? 'vip' : ''} ${isSelected ? 'selected' : ''}" 
+                                id="seat-${seatCode}" 
+                                ${isBooked ? 'disabled title="Seat already booked"' : ''} 
+                                onclick="toggleSeat('${seatCode}')">
+                            ${s.seatNumber}
+                        </button>
+                    `;
+                });
+
+                html += `</div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function toggleSeat(seatCode) {
+            const btn = document.getElementById(`seat-${seatCode}`);
+            if (!btn || btn.classList.contains('booked')) return;
+
+            if (selectedSeats.has(seatCode)) {
+                selectedSeats.delete(seatCode);
+                btn.classList.remove('selected');
+            } else {
+                selectedSeats.add(seatCode);
+                btn.classList.add('selected');
+            }
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const badgeContainer = document.getElementById('selectedSeatsBadges');
+            const count = selectedSeats.size;
+
+            if (count === 0) {
+                badgeContainer.innerHTML = `<span class="no-seats-text">No seats selected yet.</span>`;
+            } else {
+                badgeContainer.innerHTML = Array.from(selectedSeats)
+                    .map(s => `<span class="seat-tag"><i class="fa-solid fa-chair"></i> ${s}</span>`)
+                    .join('');
+            }
+
+            const basePrice = (movie ? movie.price : 250) * count;
+            const taxFee = count > 0 ? (count * 25.00) : 0;
+            const total = basePrice + taxFee;
+
+            document.getElementById('ticketCountLabel').innerText = count;
+            document.getElementById('subTotalLabel').innerText = `₹${basePrice.toFixed(2)}`;
+            document.getElementById('taxFeeLabel').innerText = `₹${taxFee.toFixed(2)}`;
+            document.getElementById('grandTotalLabel').innerText = `₹${total.toFixed(2)}`;
+
+            const payBtn = document.getElementById('btnPay');
+            if (count > 0) {
+                payBtn.removeAttribute('disabled');
+                payBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Pay ₹${total.toFixed(2)}`;
+            } else {
+                payBtn.setAttribute('disabled', 'true');
+                payBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Proceed to Pay`;
+            }
+        }
+
+        function selectPaymentMethod(btn, method) {
+            document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedMethod = method;
+        }
+
+        async function handlePayment() {
+            if (selectedSeats.size === 0) return;
+
+            const token = localStorage.getItem('jwtToken');
+            if (!token) {
+                // Open auth modal immediately
+                openAuthModal();
+                return;
+            }
+
+            const payBtn = document.getElementById('btnPay');
+            payBtn.setAttribute('disabled', 'true');
+            payBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Reserving Seats...`;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/bookings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        movieId: movie.id,
+                        seatNumbers: Array.from(selectedSeats),
+                        paymentMethod: selectedMethod
+                    })
+                });
+
+                if (response.status === 401 || response.status === 403) {
+                    // Token expired or not logged in on this port
+                    localStorage.removeItem('jwtToken');
+                    updateAuthStateAndWallet();
+                    openAuthModal();
+                    showAlert('Session expired or not signed in. Please sign in to book your tickets.', true);
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    if (response.status === 409) {
+                        // Concurrency Double Booking Prevention Triggered!
+                        showAlert(`⚠️ Double-Booking Prevented: ${data.error || 'Seat already booked by another user!'}`, true);
+                    } else {
+                        showAlert(`❌ ${data.error || 'Booking failed'}`, true);
+                    }
+                    // Refresh seats so user sees who took the seats
+                    selectedSeats.clear();
+                    updateSummary();
+                    await fetchAndRenderSeats();
+                    return;
+                }
+
+                // Success!
+                document.getElementById('confBookingId').innerText = `BK-${data.bookingId}`;
+                document.getElementById('confTxnId').innerText = data.transactionId;
+                document.getElementById('confMovieTitle').innerText = data.movieTitle;
+                document.getElementById('confTheatre').innerText = `${data.theatreName} (${data.screenType})`;
+                document.getElementById('confShowtime').innerText = formatShowTime(data.showTime);
+                document.getElementById('confSeats').innerText = (data.seatNumbers || []).join(', ');
+                document.getElementById('confAmount').innerText = `₹${(data.totalAmount || 0).toFixed(2)} via ${data.paymentMethod}`;
+                document.getElementById('confRemainingBalance').innerText = `₹${(data.userRemainingBalance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+
+                // Update wallet badge
+                if (data.userRemainingBalance !== undefined) {
+                    localStorage.setItem('userBalance', data.userRemainingBalance);
+                    document.getElementById('navWalletBalance').innerText = `₹${data.userRemainingBalance.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+                }
+
+                selectedSeats.clear();
+                updateSummary();
+                document.getElementById('ticketSuccessModal').classList.add('open');
+
+                // Re-sync seats from DB
+                await fetchAndRenderSeats();
+
+            } catch (err) {
+                showAlert(`Network or server error: ${err.message}`, true);
+            } finally {
+                payBtn.removeAttribute('disabled');
+                updateSummary();
+            }
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('ticketSuccessModal').classList.remove('open');
+        }
+
+        async function openHistoryModal() {
+            const token = localStorage.getItem('jwtToken');
+            const container = document.getElementById('historyListContainer');
+            document.getElementById('historyModal').classList.add('open');
+
+            if (!token) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <i class="fa-solid fa-user-lock" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <p style="color: #fff; font-weight: 700; margin-bottom: 0.5rem;">Authentication Required</p>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Please sign in to view your booking history.</p>
+                        <button class="btn-pay" onclick="closeHistoryModal(); openAuthModal();">Sign In Now</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `<p style="text-align: center; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading bookings...</p>`;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/bookings/history`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) {
+                    throw new Error('Failed to retrieve history');
+                }
+
+                const list = await res.json();
+                if (!list || list.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <i class="fa-solid fa-ticket-simple" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                            <p style="color: #fff; font-weight: 700;">No Bookings Yet</p>
+                            <p style="color: var(--text-muted); font-size: 0.85rem;">You have not booked any movie tickets yet.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = list.map(b => `
+                    <div class="ticket-item">
+                        <div class="ticket-item-header">
+                            <span class="ticket-item-title">${b.movieTitle}</span>
+                            <span class="ticket-status-tag">${b.status}</span>
+                        </div>
+                        <div class="ticket-item-details">
+                            <div><i class="fa-solid fa-hashtag"></i> Booking ID: <b>#${b.bookingId}</b></div>
+                            <div><i class="fa-solid fa-receipt"></i> Txn: <b style="color:#60a5fa;">${b.transactionId}</b></div>
+                            <div><i class="fa-solid fa-building"></i> Theatre: <b>${b.theatreName}</b></div>
+                            <div><i class="fa-solid fa-chair"></i> Seats: <b style="color:#38bdf8;">${(b.seatNumbers || []).join(', ')}</b></div>
+                            <div><i class="fa-regular fa-clock"></i> Booked On: <b>${formatShowTime(b.bookingTime)}</b></div>
+                            <div><i class="fa-solid fa-indian-rupee-sign"></i> Paid: <b style="color:#10b981;">₹${(b.totalAmount || 0).toFixed(2)}</b></div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (e) {
+                container.innerHTML = `<p style="text-align: center; color: #f87171;">Could not load booking history: ${e.message}</p>`;
+            }
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.remove('open');
+        }
+
+        window.addEventListener('DOMContentLoaded', loadMovieDetails);
+    </script>
+</body>
+</html>
